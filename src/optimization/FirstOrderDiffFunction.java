@@ -7,7 +7,6 @@ import HOSemiCRF.ExtLogliComputer;
 import HOSemiCRF.FeatureGenerator;
 import HOSemiCRF.LogliComputer;
 import HOSemiCRF.Loglikelihood;
-import HOSemiCRF.NeoLogiComputer;
 import Parallel.Scheduler;
 
 public class FirstOrderDiffFunction extends AbstractSVRGFunction {
