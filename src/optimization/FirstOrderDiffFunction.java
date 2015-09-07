@@ -7,6 +7,7 @@ import HOSemiCRF.ExtLogliComputer;
 import HOSemiCRF.FeatureGenerator;
 import HOSemiCRF.LogliComputer;
 import HOSemiCRF.Loglikelihood;
+import HOSemiCRF.NeoLogiComputer;
 import Parallel.Scheduler;
 
 public class FirstOrderDiffFunction extends AbstractSVRGFunction {
@@ -34,7 +35,7 @@ public class FirstOrderDiffFunction extends AbstractSVRGFunction {
 		eachDerivatives = new double[data.size()][w.length];
 		for (int i = 0; i < w.length; i++){
 			for (int j = 0; j < data.size(); j++){
-				eachDerivatives[j][i] = -(w[i] * featureGen.getParams().getInvSigmaSquare());  
+				eachDerivatives[j][i] = -(w[i] * featureGen.getParams().getInvSigmaSquare()) / data.size();  
 			}
             logli.logli -= ((w[i] * w[i]) * featureGen.getParams().getInvSigmaSquare()) / 2;
             logli.derivatives[i] = -(w[i] * featureGen.getParams().getInvSigmaSquare());
@@ -80,17 +81,37 @@ public class FirstOrderDiffFunction extends AbstractSVRGFunction {
 
 	@Override
 	public double[] takeDerivative(double[] w, int[] index) {
-		int l = w.length;
-		double[] result = new double[l];
 		
-		for(int i : index){
-			double[] eachDev = takeDerivative(w, i);
-			for (int j = 0; j < l; j++){
-				result[j] += eachDev[j];
-			}
-		}
-		
-		return result;
+		Loglikelihood subLogli = new Loglikelihood(w.length);
+		double l = (double) index.length;
+        for (int i = 0; i < w.length; i++) {
+        	subLogli.logli -= ((w[i] * w[i]) * featureGen.getParams().getInvSigmaSquare()) / 2; // actually, we dont care about this value
+        	subLogli.derivatives[i] = -(w[i] * featureGen.getParams().getInvSigmaSquare()) / data.size();
+        }
+        
+        ArrayList<DataSequence> subdata = new ArrayList<DataSequence>();
+        for(int i : index){
+        	subdata.add(data.get(i));
+        }
+        
+        LogliComputer logliComp = new LogliComputer(w, featureGen, subdata, subLogli);
+//        NeoLogiComputer logliComp = new NeoLogiComputer(w, featureGen, data, subLogli, index);
+        
+        Scheduler sch = new Scheduler(logliComp, featureGen.getParams().getNumthreads(), Scheduler.DYNAMIC_NEXT_AVAILABLE);
+        try {
+            sch.run();
+        } catch (Exception e) {
+            System.out.println("Errors occur when training in parallel! " + e);
+        }
+
+        // Change sign to maximize and divide the values by size of dataset        
+        double n = (double) data.size();
+        for (int i = 0; i < w.length; i++) {
+        	subLogli.derivatives[i] = -(subLogli.derivatives[i] / n);
+        }
+        subLogli.logli = -(subLogli.logli / n); // we dont care about this value
+        		
+		return subLogli.derivatives;
 	}
 
 	@Override
@@ -100,7 +121,7 @@ public class FirstOrderDiffFunction extends AbstractSVRGFunction {
         double[] result = ((Loglikelihood) llc.compute(index)).getDerivatives();
         
         for (int i = 0; i < w.length; i++) {
-            result[i] -= (w[i] * featureGen.getParams().getInvSigmaSquare());
+            result[i] -= (w[i] * featureGen.getParams().getInvSigmaSquare())/ data.size();
             result[i] = -result[i] / data.size(); // Change sign to maximize 
         }     
 
