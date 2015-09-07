@@ -12,9 +12,8 @@ public class SVRGMinimizer extends Minimizer {
 
 	@Override
 	public double[] minimize(AbstractSVRGFunction f, double[] init,
-			double learningRate, int maxPasses, double funcTol) {
+			double learningRate, int maxPasses, int upFreq, double funcTol) {
 		int n = f.getNumberOfDataPoints();
-		int upFreq = 10;
 		int d = init.length;
 
 		double[] w_0_tilde = new double[d];
@@ -82,14 +81,14 @@ public class SVRGMinimizer extends Minimizer {
 	 * @param init
 	 * @param learningRate
 	 * @param numRandom		number of random indices which are selected in the inner loop
-	 * @param maxPasses
+	 * @param maxPasses		maximum number of outer loop
+	 * @param upFreq		number of iteration of inner loop
 	 * @param funcTol
 	 * @return
 	 */
 	public double[] minimize(AbstractSVRGFunction f, double[] init,
-			double learningRate, int numRandom, int maxPasses, double funcTol){
+			double learningRate, int numRandom, int maxPasses, int upFreq, double funcTol){
 		int n = f.getNumberOfDataPoints(); // number of data points
-		int upFreq = 10;
 		int d = init.length;
 
 		double[] w_0_tilde = new double[d];

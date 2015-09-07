@@ -54,14 +54,19 @@ public abstract class Minimizer {
 		return minimize(f, init, learningRate, maxPasses, 0.001);
 	}
 	
+	public double[] minimize(AbstractSVRGFunction f, double[] init, double learningRate, int maxPasses, double funcTol){
+		return minimize(f, init, learningRate, maxPasses, 10, 0.001);
+	}
+	
 	/**
 	 * finding value that minimize function via 1st-order optimization
 	 * @param f				function that we want to optimize
 	 * @param init			initial values
 	 * @param learningRate	learning rate of each iteration
 	 * @param maxPasses		maximum number of data pass
+	 * @param upFreq		number of iteration of inner loop
 	 * @param funcTol		threshold to stop iteration before reaching max number of iteration
 	 * @return				value that minimize function
 	 */
-	public abstract double[] minimize(AbstractSVRGFunction f, double[] init, double learningRate, int maxPasses, double funcTol);
+	public abstract double[] minimize(AbstractSVRGFunction f, double[] init, double learningRate, int maxPasses, int upFreq, double funcTol);
 }

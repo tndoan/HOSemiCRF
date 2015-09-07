@@ -82,7 +82,7 @@ public class FirstOrderDiffFunction extends AbstractSVRGFunction {
 	public double[] takeDerivative(double[] w, int[] index) {
 		
 		Loglikelihood subLogli = new Loglikelihood(w.length);
-		double l = (double) index.length;
+//		double l = (double) index.length;
         for (int i = 0; i < w.length; i++) {
         	subLogli.logli -= ((w[i] * w[i]) * featureGen.getParams().getInvSigmaSquare()) / 2; // actually, we dont care about this value
         	subLogli.derivatives[i] = -(w[i] * featureGen.getParams().getInvSigmaSquare()) / data.size();

@@ -119,7 +119,7 @@ public class PunctuationPredictor {
     /**
      * Train the high-order semi-CRF.
      */
-    public void train(String puncFilename) throws Exception {
+    public void train(String puncFilename, int method) throws Exception {
     	// Set training file name and create output directory
         String trainFilename = "punc.train";
         File dir = new File("learntModels/");
@@ -137,7 +137,7 @@ public class PunctuationPredictor {
 
         // Train and save model
         highOrderSemiCrfModel = new HighOrderSemiCRF(featureGen);
-        highOrderSemiCrfModel.train(trainData.getSeqList());
+        highOrderSemiCrfModel.train(trainData.getSeqList(), method);
         highOrderSemiCrfModel.write("learntModels/crf");
     }
 
@@ -179,14 +179,34 @@ public class PunctuationPredictor {
      * Main class
      */
     public static void main(String argv[]) throws Exception {
+    	// assume that argv[0] is 'all'
         PunctuationPredictor puncPredictor = new PunctuationPredictor(argv[1]);
-        if (argv[0].toLowerCase().equals("all")) {
-            puncPredictor.train(argv[2]);
-            puncPredictor.test(argv[3]);
-        } else if (argv[0].toLowerCase().equals("train")) {
-            puncPredictor.train(argv[2]);
-        } else if (argv[0].toLowerCase().equals("test")) {
-            puncPredictor.test(argv[3]);
-        }
+        long startTime = System.currentTimeMillis();
+        puncPredictor.train(argv[2], 1); // do the quasi-Newton
+        System.out.println("done training in " + (System.currentTimeMillis() - startTime) + "ms");
+        puncPredictor.test(argv[3]);
+                
+        puncPredictor = new PunctuationPredictor(argv[1]);
+        startTime = System.currentTimeMillis();
+        puncPredictor.train(argv[2], 2); // standard SVRG
+        System.out.println("done training in " + (System.currentTimeMillis() - startTime) + "ms");
+        puncPredictor.test(argv[3]);
+        
+        puncPredictor = new PunctuationPredictor(argv[1]);
+        startTime = System.currentTimeMillis();
+        puncPredictor.train(argv[2], 3); // batch SVRG
+        System.out.println("done training in " + (System.currentTimeMillis() - startTime) + "ms");
+        puncPredictor.test(argv[3]);
+        
+//        int method = Integer.parseInt(argv[4]);
+//        if (argv[0].toLowerCase().equals("all")) {
+//            puncPredictor.train(argv[2], method);
+//            puncPredictor.test(argv[3]);
+//        } else if (argv[0].toLowerCase().equals("train")) {
+//            puncPredictor.train(argv[2], method);
+//        } else if (argv[0].toLowerCase().equals("test")) {
+//            puncPredictor.test(argv[3]);
+//        }
+        
     }
 }

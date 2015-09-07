@@ -9,8 +9,8 @@ public class SGDMinimizer extends Minimizer {
 
 	@Override
 	public double[] minimize(AbstractSVRGFunction f, double[] init,
-			double learningRate, int maxPasses, double funcTol) {
-		
+			double learningRate, int maxPasses, int upFreq, double funcTol) {
+		//Note: upFreq does not use
 		double[] result = new double[init.length];
 		System.arraycopy(init, 0, result, 0, init.length);
 		double pre_obj = Double.MAX_VALUE;

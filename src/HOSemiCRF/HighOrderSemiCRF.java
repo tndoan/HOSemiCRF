@@ -22,6 +22,7 @@ package HOSemiCRF;
 import java.io.*;
 import java.util.*;
 
+import edu.stanford.nlp.optimization.QNMinimizer;
 import optimization.FirstOrderDiffFunction;
 import optimization.SVRGMinimizer;
 import Parallel.*;
@@ -48,16 +49,27 @@ public class HighOrderSemiCRF {
     /**
      * Train a high-order semi-CRF from data.
      * @param data Training data
+     * @param method	1 for quasi-Newton; 2 for SVRG; other for batch SVRG(Experimental)
      */
-    public void train(ArrayList<DataSequence> data) {
+    public void train(ArrayList<DataSequence> data, int method) {
     	// use library to do minimization
-//        QNMinimizer qn = new QNMinimizer();
-//        Function df = new Function(featureGen, data);
-//        lambda = qn.minimize(df, featureGen.params.epsForConvergence, lambda, featureGen.params.maxIters);
-        
-        FirstOrderDiffFunction func = new FirstOrderDiffFunction(featureGen, data);
-        SVRGMinimizer svrg = new SVRGMinimizer();
-        lambda = svrg.minimize(func, lambda, featureGen.params.getLearningRate(), featureGen.params.maxIters, featureGen.params.epsForConvergence);
+    	int maxIters = featureGen.params.maxIters;
+    	double epsForConvergence = featureGen.params.epsForConvergence;
+    	double learningRate = featureGen.params.getLearningRate();
+    	
+    	if (method == 1){
+	        QNMinimizer qn = new QNMinimizer();
+	        Function df = new Function(featureGen, data);
+	        lambda = qn.minimize(df, epsForConvergence, lambda, maxIters);
+    	} else if (method == 2){
+	        FirstOrderDiffFunction func = new FirstOrderDiffFunction(featureGen, data);
+	        SVRGMinimizer svrg = new SVRGMinimizer();
+	        lambda = svrg.minimize(func, lambda, learningRate, maxIters, epsForConvergence);
+    	} else {
+    		FirstOrderDiffFunction func = new FirstOrderDiffFunction(featureGen, data);
+	        SVRGMinimizer svrg = new SVRGMinimizer();
+	        lambda = svrg.minimize(func, lambda, learningRate, featureGen.params.getNumRan(), maxIters, featureGen.params.getUpFreq(), epsForConvergence);
+    	}
     }
 
     /**

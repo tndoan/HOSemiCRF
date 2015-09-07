@@ -21,6 +21,7 @@ package Applications;
 
 import java.io.*;
 import java.util.*;
+
 import HOSemiCRF.*;
 import Applications.RefFeatures.*;
 
@@ -118,7 +119,7 @@ public class ReferenceTagger {
     /**
      * Train the high-order semi-CRF.
      */
-    public void train(String trainFilename) throws Exception {
+    public void train(String trainFilename, int method) throws Exception {
         // Set training file name and create output directory
 //        String trainFilename = "ref.train";
         File dir = new File("learntModels/");
@@ -135,7 +136,7 @@ public class ReferenceTagger {
 		
         // Train and save model
         highOrderSemiCrfModel = new HighOrderSemiCRF(featureGen);
-        highOrderSemiCrfModel.train(trainData.getSeqList());
+        highOrderSemiCrfModel.train(trainData.getSeqList(), method);
         highOrderSemiCrfModel.write("learntModels/crf");
     }
 
@@ -177,13 +178,31 @@ public class ReferenceTagger {
      */
     public static void main(String argv[]) throws Exception {
         ReferenceTagger refTagger = new ReferenceTagger(argv[1]);
-        if (argv[0].toLowerCase().equals("all")) {
-            refTagger.train(argv[2]);
-            refTagger.test(argv[3]);
-        } else if (argv[0].toLowerCase().equals("train")) {
-            refTagger.train(argv[2]);
-        } else if (argv[0].toLowerCase().equals("test")) {
-            refTagger.test(argv[3]);
-        }
+        long startTime = System.currentTimeMillis();
+        refTagger.train(argv[2], 1); // do the quasi-Newton
+        System.out.println("done training in " + (System.currentTimeMillis() - startTime) + "ms");
+        refTagger.test(argv[3]);
+
+        refTagger = new ReferenceTagger(argv[1]);
+        startTime = System.currentTimeMillis();
+        refTagger.train(argv[2], 2); // standard SVRG
+        System.out.println("done training in " + (System.currentTimeMillis() - startTime) + "ms");
+        refTagger.test(argv[3]);
+        
+        refTagger = new ReferenceTagger(argv[1]);
+        startTime = System.currentTimeMillis();
+        refTagger.train(argv[2], 3); // batch SVRG
+        System.out.println("done training in " + (System.currentTimeMillis() - startTime) + "ms");
+        refTagger.test(argv[3]);
+        
+//        int method = Integer.parseInt(argv[4]);
+//        if (argv[0].toLowerCase().equals("all")) {
+//            refTagger.train(argv[2], method);
+//            refTagger.test(argv[3]);
+//        } else if (argv[0].toLowerCase().equals("train")) {
+//            refTagger.train(argv[2], method);
+//        } else if (argv[0].toLowerCase().equals("test")) {
+//            refTagger.test(argv[3]);
+//        }
     }
 }

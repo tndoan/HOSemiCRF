@@ -40,6 +40,10 @@ public class Params {
      * learning rate for first order minimizer
      */
     double learningRate = 0.1; // 
+    
+    //Below are some parameters for SVRG
+    int upFreq = 10; // update frequency (number of iteration of inner loop)
+    int numRan = 10; // number of random value for our experimental SVRG
 
     /**
      * Construct a parameters object.
@@ -67,6 +71,14 @@ public class Params {
         }
         if ((value = options.getProperty("learningRate")) != null){
         	learningRate = Double.parseDouble(value);
+        }
+        
+        // specific for SVRG
+        if ((value = options.getProperty("upFreq")) != null){
+        	upFreq = Integer.parseInt(value);
+        }
+        if ((value = options.getProperty("numRan")) != null){
+        	numRan = Integer.parseInt(value);
         }
         numLabels = nl;
     }
@@ -125,5 +137,13 @@ public class Params {
 	 */
 	public double getLearningRate() {
 		return learningRate;
+	}
+
+	public int getUpFreq() {
+		return upFreq;
+	}
+
+	public int getNumRan() {
+		return numRan;
 	}
 }
