@@ -24,6 +24,7 @@ import java.util.*;
 
 import edu.stanford.nlp.optimization.QNMinimizer;
 import optimization.FirstOrderDiffFunction;
+import optimization.SGDMinimizer;
 import optimization.SVRGMinimizer;
 import Parallel.*;
 
@@ -49,7 +50,7 @@ public class HighOrderSemiCRF {
     /**
      * Train a high-order semi-CRF from data.
      * @param data Training data
-     * @param method	1 for quasi-Newton; 2 for SVRG; other for batch SVRG(Experimental)
+     * @param method	1 for quasi-Newton; 2 for SVRG; 3 for batch SVRG(Experimental); otherwise, SGD
      */
     public void train(ArrayList<DataSequence> data, int method) {
     	// use library to do minimization
@@ -57,18 +58,22 @@ public class HighOrderSemiCRF {
     	double epsForConvergence = featureGen.params.epsForConvergence;
     	double learningRate = featureGen.params.getLearningRate();
     	
-    	if (method == 1){
+    	if (method == 1) {
 	        QNMinimizer qn = new QNMinimizer();
 	        Function df = new Function(featureGen, data);
 	        lambda = qn.minimize(df, epsForConvergence, lambda, maxIters);
-    	} else if (method == 2){
+    	} else if (method == 2)	{
 	        FirstOrderDiffFunction func = new FirstOrderDiffFunction(featureGen, data);
 	        SVRGMinimizer svrg = new SVRGMinimizer();
 	        lambda = svrg.minimize(func, lambda, learningRate, maxIters, epsForConvergence);
-    	} else {
+    	} else if (method == 3) {
     		FirstOrderDiffFunction func = new FirstOrderDiffFunction(featureGen, data);
 	        SVRGMinimizer svrg = new SVRGMinimizer();
 	        lambda = svrg.minimize(func, lambda, learningRate, featureGen.params.getNumRan(), maxIters, featureGen.params.getUpFreq(), epsForConvergence);
+    	} else {
+    		FirstOrderDiffFunction func = new FirstOrderDiffFunction(featureGen, data);
+    		SGDMinimizer sgd = new SGDMinimizer();
+    		lambda = sgd.minimize(func, lambda, learningRate, maxIters, epsForConvergence);
     	}
     }
 

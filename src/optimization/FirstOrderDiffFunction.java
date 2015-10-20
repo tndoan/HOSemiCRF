@@ -1,6 +1,7 @@
 package optimization;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import HOSemiCRF.DataSequence;
 import HOSemiCRF.ExtLogliComputer;
@@ -10,6 +11,8 @@ import HOSemiCRF.Loglikelihood;
 import Parallel.Scheduler;
 
 public class FirstOrderDiffFunction extends AbstractSVRGFunction {
+	
+	private double[] lambda;
 	
     FeatureGenerator featureGen; // Feature generator
 	ArrayList<DataSequence> data;
@@ -63,18 +66,28 @@ public class FirstOrderDiffFunction extends AbstractSVRGFunction {
 	 */
 	@Override
 	public double valueAt(double[] w) {
+		if (!Arrays.equals(w, lambda)) {
+			lambda = w.clone();
+			this.computeAllValues(w);
+		}
 		return logli.getLogli();
 	}
 
 	@Override
-	// Ensure that computeAllValues(w) was called before this
 	public double[] takeDerivative(double[] w) {
+		if (!Arrays.equals(w, lambda)){
+			lambda = w.clone();
+			this.computeAllValues(w);
+		}
 		return logli.getDerivatives();
 	}
 	
 	@Override
-	// Ensure that computeAllValues(w) was called before this
 	public double[][] takeEachDerivative(double[] w){
+		if (!Arrays.equals(w, lambda)) {
+			lambda = w.clone();
+			this.computeAllValues(w);
+		}
 		return eachDerivatives;
 	}
 
