@@ -23,6 +23,14 @@ public abstract class AbstractSVRGFunction  {
 	public abstract double valueAt(double[] w);
 	
 	/**
+	 * return value of function at specific data point
+	 * @param w		vector
+	 * @param index	index of data point
+	 * @return		objective value
+	 */
+	public abstract double valueAt(double[] w, int index);
+	
+	/**
 	 * take derivative of function of whole data
 	 * @param w	value of parameters
 	 * @return	array corresponding to the derivative

@@ -127,17 +127,35 @@ public class FirstOrderDiffFunction extends AbstractSVRGFunction {
 	}
 
 	@Override
-	public double[] takeDerivative(double[] w, int index) {	
+	public double[] takeDerivative(double[] w, int index) {
         Loglikelihood llh = new Loglikelihood(w.length); // can set loglikelihood any value; we dont care about this value
         LogliComputer llc = new LogliComputer(w, featureGen, data, llh);
-        double[] result = ((Loglikelihood) llc.compute(index)).getDerivatives();
+        Loglikelihood result = (Loglikelihood) llc.compute(index);
+        double[] dev = result.getDerivatives();
         
         for (int i = 0; i < w.length; i++) {
-            result[i] -= (w[i] * featureGen.getParams().getInvSigmaSquare())/ data.size();
-            result[i] = -result[i] / data.size(); // Change sign to maximize 
-        }     
+            dev[i] -= (w[i] * featureGen.getParams().getInvSigmaSquare())/ data.size();
+            dev[i] = -dev[i] / data.size(); // Change sign to maximize 
+        }
 
-		return result;
+		return dev;
+	}
+	
+	/**
+	 * return value of function at specific data point
+	 * @param w		vector
+	 * @param index	index of data point
+	 * @return		objective value
+	 */
+	@Override
+	public double valueAt(double[] w, int index) {
+		Loglikelihood llh = new Loglikelihood(w.length);
+		LogliComputer llc = new LogliComputer(w, featureGen, data, llh);
+		Loglikelihood result = (Loglikelihood) llc.compute(index);
+		
+		// we only have one data point so dont need to stabilize by dividing to # of data points
+		// we only need to change sign
+		return -result.logli;
 	}
 
 	@Override

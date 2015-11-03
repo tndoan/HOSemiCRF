@@ -104,4 +104,10 @@ public class SquareLossFunction extends AbstractSVRGFunction{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public double valueAt(double[] w, int index) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }
