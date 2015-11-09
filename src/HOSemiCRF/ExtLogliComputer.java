@@ -1,6 +1,6 @@
 package HOSemiCRF;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class extends LogliComputer in order to do parallel and get the derivative of each data point.
@@ -15,7 +15,7 @@ public class ExtLogliComputer extends LogliComputer {
 	private double[][] eachDerivatives;
 
 	public ExtLogliComputer(double[] lambdaValues, FeatureGenerator fgen,
-			ArrayList<DataSequence> td, Loglikelihood loglh, double[][] eachDerivatives) {
+			List<DataSequence> td, Loglikelihood loglh, double[][] eachDerivatives) {
 		super(lambdaValues, fgen, td, loglh);
 		this.eachDerivatives = eachDerivatives;
 	}

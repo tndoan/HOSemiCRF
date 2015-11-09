@@ -2,6 +2,7 @@ package optimization;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import HOSemiCRF.DataSequence;
 import HOSemiCRF.ExtLogliComputer;
@@ -15,13 +16,13 @@ public class FirstOrderDiffFunction extends AbstractSVRGFunction {
 	private double[] lambda;
 	
     FeatureGenerator featureGen; // Feature generator
-	ArrayList<DataSequence> data;
+	List<DataSequence> data;
 	
 	// Stored results
 	private Loglikelihood logli;
 	private double[][] eachDerivatives;
 
-	public FirstOrderDiffFunction(FeatureGenerator fg, ArrayList<DataSequence> data) {
+	public FirstOrderDiffFunction(FeatureGenerator fg, List<DataSequence> data) {
 		this.data = data;
 		this.featureGen = fg;
 	}

@@ -52,7 +52,7 @@ public class HighOrderSemiCRF {
      * @param data Training data
      * @param method	1 for quasi-Newton; 2 for SVRG; 3 for batch SVRG(Experimental); otherwise, SGD
      */
-    public void train(ArrayList<DataSequence> data, int method) {
+    public void train(List<DataSequence> data, int method) {
     	// use library to do minimization
     	int maxIters = featureGen.params.maxIters;
     	double epsForConvergence = featureGen.params.epsForConvergence;
@@ -81,7 +81,7 @@ public class HighOrderSemiCRF {
      * Run Viterbi algorithm on testing data.
      * @param data Testing data
      */
-    public void runViterbi(ArrayList<DataSequence> data) throws Exception {
+    public void runViterbi(List<DataSequence> data) throws Exception {
         Viterbi tester = new Viterbi(featureGen, lambda, data);
         Scheduler sch = new Scheduler(tester, featureGen.params.numthreads, Scheduler.DYNAMIC_NEXT_AVAILABLE);
         sch.run();

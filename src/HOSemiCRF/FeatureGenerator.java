@@ -72,7 +72,7 @@ public class FeatureGenerator {
      * This method needs to be called before the training process.
      * @param trainData List of training sequences
      */
-    public void initialize(ArrayList<DataSequence> trainData) throws Exception {
+    public void initialize(List<DataSequence> trainData) throws Exception {
         createMaxMemory(trainData);
         generateFeatureMap(trainData);
         generateForwardStatesMap();
@@ -296,7 +296,7 @@ public class FeatureGenerator {
      * Generate the observations for each training sequence.
      * @param trainData List of training sequences
      */
-    public void generateSentenceObs(ArrayList<DataSequence> trainData) throws Exception {
+    public void generateSentenceObs(List<DataSequence> trainData) throws Exception {
         SentenceObsGenerator gen = new SentenceObsGenerator(trainData, this);
         Scheduler sch = new Scheduler(gen, params.numthreads, Scheduler.DYNAMIC_NEXT_AVAILABLE);
         sch.run();
@@ -308,7 +308,7 @@ public class FeatureGenerator {
      * Reset the segment information for each training sequence.
      * @param trainData List of training sequences
      */
-    public void createMaxMemory(ArrayList<DataSequence> trainData) throws Exception {
+    public void createMaxMemory(List<DataSequence> trainData) throws Exception {
         maxMemory = new int[params.numLabels];
         Arrays.fill(maxMemory, -1);
         
@@ -343,7 +343,7 @@ public class FeatureGenerator {
      * Generate the observation map, pattern map, feature map, and feature list from training data.
      * @param trainData List of training sequences
      */
-    public void generateFeatureMap(ArrayList<DataSequence> trainData) {
+    public void generateFeatureMap(List<DataSequence> trainData) {
         obsMap = new HashMap<>();
         patternMap = new HashMap<>();
         featureMap = new HashMap<>();

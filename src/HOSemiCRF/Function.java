@@ -30,7 +30,7 @@ import Parallel.*;
 public class Function implements DiffFunction {
 
     FeatureGenerator featureGen; // Feature generator
-    ArrayList<DataSequence> trainData; // List of training sequences
+    List<DataSequence> trainData; // List of training sequences
 	
     // Private data structures to compute function value and derivatives
     private Loglikelihood logli; // Loglikelihood values
@@ -41,7 +41,7 @@ public class Function implements DiffFunction {
      * @param fgen Feature generator
      * @param data Training data
      */
-    public Function(FeatureGenerator fgen, ArrayList<DataSequence> data) {
+    public Function(FeatureGenerator fgen, List<DataSequence> data) {
         featureGen = fgen;        
         trainData = data;
         lambdaCache = null;
