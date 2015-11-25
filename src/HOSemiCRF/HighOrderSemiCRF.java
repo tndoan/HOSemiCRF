@@ -50,7 +50,8 @@ public class HighOrderSemiCRF {
     /**
      * Train a high-order semi-CRF from data.
      * @param data Training data
-     * @param method	1 for quasi-Newton; 2 for SVRG; 3 for batch SVRG(Experimental); otherwise, SGD
+     * @param method	1 for quasi-Newton; 2 for SVRG; 3 for batch SVRG(Experimental); 4 SGD with backtracking; 
+     * 					otherwise, mini-batch SGD without backtracking
      */
     public void train(List<DataSequence> data, int method) {
     	// use library to do minimization
@@ -62,6 +63,7 @@ public class HighOrderSemiCRF {
 	        QNMinimizer qn = new QNMinimizer();
 	        Function df = new Function(featureGen, data);
 	        lambda = qn.minimize(df, epsForConvergence, lambda, maxIters);
+	        System.out.println(df.valueAt(lambda));
     	} else if (method == 2)	{
 	        FirstOrderDiffFunction func = new FirstOrderDiffFunction(featureGen, data);
 	        SVRGMinimizer svrg = new SVRGMinimizer();
@@ -70,10 +72,17 @@ public class HighOrderSemiCRF {
     		FirstOrderDiffFunction func = new FirstOrderDiffFunction(featureGen, data);
 	        SVRGMinimizer svrg = new SVRGMinimizer();
 	        lambda = svrg.minimize(func, lambda, learningRate, featureGen.params.getNumRan(), maxIters, featureGen.params.getUpFreq(), epsForConvergence);
-    	} else {
+	        System.out.println(func.valueAt(lambda));
+    	} else if (method == 4) {
     		FirstOrderDiffFunction func = new FirstOrderDiffFunction(featureGen, data);
     		SGDMinimizer sgd = new SGDMinimizer();
     		lambda = sgd.minimize(func, lambda, learningRate, maxIters, epsForConvergence);
+    		System.out.println(func.valueAt(lambda));
+    	} else {
+    		FirstOrderDiffFunction func = new FirstOrderDiffFunction(featureGen, data);
+    		SGDMinimizer sgd = new SGDMinimizer();
+    		lambda = sgd.minimizeNoBackTracking(func, lambda, maxIters, epsForConvergence); // TODO: numThread must be flexible
+    		System.out.println(func.valueAt(lambda));
     	}
     }
 
