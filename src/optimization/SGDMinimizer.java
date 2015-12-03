@@ -1,5 +1,7 @@
 package optimization;
 
+import HOSemiCRF.Params;
+
 /**
  * implementation of Stochastic Gradient Descent
  * @author tndoan
